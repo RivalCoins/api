@@ -61,8 +61,14 @@ public static class Program
     {
         var network = RivalCoins.Sdk.Network.Mainnet;
         var circulatingSupplies = new List<CirculatingSupply>();
+        var circulatingSupplyRefresh = new Progress<List<CirculatingSupply>>();
 
-        _ = RivalCoinCirculatingSupplyServerAsync(network, new Progress<List<CirculatingSupply>>(currentCirculatingSupplies => circulatingSupplies = currentCirculatingSupplies));
+        circulatingSupplyRefresh.ProgressChanged += (s, currentCirculatingSupplies) => {
+            Console.WriteLine("updating circulating supply");
+            circulatingSupplies = currentCirculatingSupplies;
+        };
+
+        _ = RivalCoinCirculatingSupplyServerAsync(network, circulatingSupplyRefresh);
 
         var builder = WebApplication.CreateBuilder(args);
 
